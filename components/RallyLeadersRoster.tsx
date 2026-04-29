@@ -9,19 +9,17 @@ interface Member {
   deploymentCap: string;
   highestTier: string;
   totalTroops: string;
+  group?: string;
 }
 
-export default function MembersRoster({ members = [] }: { members?: Member[] }) {
-  // Filter OUT Vector and albo so they stay in the Leadership section
-  const r3Members = members.filter(m => 
-    m.name.toLowerCase() !== "vector" && 
-    m.name.toLowerCase() !== "albo"
-  );
+export default function RallyLeadersRoster({ members = [] }: { members?: Member[] }) {
+  // Filter for members specifically tagged as "Rally Leaders"
+  const leaders = members.filter(m => m.group === "Rally Leaders");
 
   return (
     <Card>
-      <h2 className="text-lg font-semibold mb-4">Members (R3 / R2)</h2>
-      <p className="text-sm text-accent-muted mb-4">Displaying verified members.</p>
+      <h2 className="text-lg font-semibold mb-4">Rally Leaders</h2>
+      <p className="text-sm text-accent-muted mb-4">Members with high rally capacities designated to lead attacks.</p>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -35,7 +33,7 @@ export default function MembersRoster({ members = [] }: { members?: Member[] }) 
             </tr>
           </thead>
           <tbody>
-            {r3Members.map((member) => (
+            {leaders.map((member) => (
               <tr key={member.id} className="border-b border-slate-800 hover:bg-background/50">
                 <td className="py-3 px-4 font-semibold">{member.name}</td>
                 <td className="py-3 px-4">{member.townCenter}</td>
@@ -45,9 +43,9 @@ export default function MembersRoster({ members = [] }: { members?: Member[] }) 
                 <td className="py-3 px-4">{member.totalTroops}</td>
               </tr>
             ))}
-            {r3Members.length === 0 && (
+            {leaders.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-4 text-center text-accent-muted">No members found.</td>
+                <td colSpan={6} className="py-4 text-center text-accent-muted">No Rally Leaders found.</td>
               </tr>
             )}
           </tbody>

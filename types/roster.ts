@@ -1,24 +1,30 @@
-export type RosterStatus = "active" | "inactive" | "left" | "archived" | "rejoined";
-export type RosterGroup = "Leadership" | "Veterans" | "Members" | "Rally Leaders" | "Rally Joiners" | "Inactive" | "Needs Review";
+// Location: /types/roster.ts
+
+export type TacticalGroup = 
+  | "Rally Host" 
+  | "R3"            // This is High Power
+  | "R2"            // This is Mid Power
+  | "R1"            // This is Low Power
+  | "Needs Review";
+
+// Export the alias to fix the "no exported member RosterGroup" error
+export type RosterGroup = TacticalGroup;
+
+export type SubmissionRole = "Veteran" | "Newbie";
+export type AllianceRank = TacticalGroup | "Leadership";
 
 export interface RosterMember {
   id: string;
   name: string;
+  role: SubmissionRole;
+  rank: AllianceRank;
   townCenter: number;
-  rallyCap: string | number; // String e.g. "225K" or Number 225000
-  deploymentCap: string | number;
-  highestTier: string; // e.g., "T7"
-  totalTroops: string | number;
-  status: RosterStatus;
-  group: RosterGroup;
-  lastUpdated: string; // ISO 8601 string
-}
-
-export interface SubmissionForm {
-  name: string;
-  townCenter: number;
-  rallyCap: string;
+  rallyCap: string | number;
   deploymentCap: string;
   highestTier: string;
   totalTroops: string;
+  submittedAt: string;
+  status: "pending" | "approved" | "rejected";
+  group: TacticalGroup; 
+  notes?: string;
 }

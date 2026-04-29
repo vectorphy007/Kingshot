@@ -1,36 +1,57 @@
-import { RosterMember, RosterGroup } from "@/types/roster";
+// Location: /lib/ai/classification/role.ts
 
-// A simple rules engine to suggest player roles based on their stats
-export function suggestPlayerRole(member: Partial<RosterMember>, activityScore?: number): RosterGroup {
+import { kmeans } from 'ml-kmeans';
+import { RosterMember, TacticalGroup } from "@/types/roster"; // Added import
+
+function parseCapacity(cap: string | number | undefined): number {
+  if (!cap) return 0;
+  if (typeof cap === "number") return cap;
+  const cleanStr = cap.toString().replace(/,/g, '').toUpperCase();
+  const val = parseFloat(cleanStr);
+  if (isNaN(val)) return 0;
+  if (cleanStr.includes('M')) return val * 1000000;
+  if (cleanStr.includes('K')) return val * 1000;
+  return val;
+}
+
+export function autoClassifyRoster(roster: RosterMember[]): RosterMember[] {
+  if (roster.length < 4) return roster;
+
+  const data = roster.map(member => [
+    member.townCenter || 0,
+    parseCapacity(member.rallyCap)
+  ]);
+
+  const result = kmeans(data, 4, { initialization: 'kmeans++' });
+
+  const clusterScores = result.centroids.map((centroid, index) => {
+    const score = (centroid[0] * 10000) + centroid[1];
+    return { index, score };
+  });
+
+  clusterScores.sort((a, b) => b.score - a.score);
+
+  // UPDATED: Mapping clusters to R-Ranks
+  const roleMapping: Record<number, TacticalGroup> = {
+    [clusterScores[0].index]: "Rally Host",
+    [clusterScores[1].index]: "R3", // High
+    [clusterScores[2].index]: "R2", // Mid
+    [clusterScores[3].index]: "R1"  // Low
+  };
+
+  return roster.map((member, i) => {
+    const clusterId = result.clusters[i];
+    return {
+      ...member,
+      group: roleMapping[clusterId]
+    };
+  });
+}
+
+export function suggestPlayerRole(member: Partial<RosterMember>): TacticalGroup {
   const tc = member.townCenter || 0;
-
-  // Parse rally cap
-  let rallyCapNum = 0;
-  if (typeof member.rallyCap === "string") {
-    // "225K" -> 225000
-    const val = parseFloat(member.rallyCap);
-    if (!isNaN(val)) rallyCapNum = member.rallyCap.toUpperCase().includes('K') ? val * 1000 : val;
-  } else if (typeof member.rallyCap === "number") {
-    rallyCapNum = member.rallyCap;
-  }
-
-  // Base rules including activity heuristic if available
-  const isActive = activityScore === undefined || activityScore > 50;
-
-  if (!isActive && tc > 0) {
-    return "Inactive";
-  }
-
-  // Advanced Rules based on research
-  if (tc >= 35 && rallyCapNum >= 300000) {
-    return "Rally Leaders";
-  } else if (tc >= 30) {
-    return "Veterans"; // Transitioning to Truegold
-  } else if (tc >= 20) {
-    return "Members";
-  } else if (tc > 0) {
-    return "Needs Review"; // Very low level
-  }
-
-  return "Needs Review";
+  if (tc >= 24) return "Rally Host";
+  if (tc >= 22) return "R3";
+  if (tc >= 19) return "R2";
+  return "R1";
 }

@@ -1,26 +1,27 @@
+// Location: /lib/ai/anomaly-detection.ts
+
 import { RosterMember } from "@/types/roster";
 
-export function detectAnomalies(member: RosterMember): string[] {
+export function detectAnomalies(member: Partial<RosterMember>): string[] {
   const anomalies: string[] = [];
+  const tc = Number(member.townCenter) || 0;
 
-  const tc = member.townCenter || 0;
-
-  // Parse rally cap
   let rallyCapNum = 0;
   if (typeof member.rallyCap === "string") {
-    const val = parseFloat(member.rallyCap);
-    if (!isNaN(val)) rallyCapNum = member.rallyCap.toUpperCase().includes('K') ? val * 1000 : member.rallyCap.toUpperCase().includes('M') ? val * 1000000 : val;
-  } else if (typeof member.rallyCap === "number") {
-    rallyCapNum = member.rallyCap;
+    const cleanStr = member.rallyCap.replace(/,/g, '').toUpperCase();
+    const val = parseFloat(cleanStr);
+    if (!isNaN(val)) {
+      rallyCapNum = cleanStr.includes('K') ? val * 1000 : cleanStr.includes('M') ? val * 1000000 : val;
+    }
   }
 
-  // Example rules for impossible stats
-  if (tc < 20 && rallyCapNum > 150000) {
-    anomalies.push("Rally cap is unusually high for a Town Center below level 20.");
+  // Combat formula logic checks
+  if (tc < 15 && rallyCapNum > 100000) {
+    anomalies.push("Rally capacity is impossible for this TC level.");
   }
 
-  if (tc > 50) {
-    anomalies.push("Town Center level exceeds typical known maximums.");
+  if (tc > 30) {
+    anomalies.push("Town Center level exceeds server cap.");
   }
 
   return anomalies;

@@ -346,5 +346,17 @@
     "status": "active",
     "group": "Rally Leaders",
     "lastUpdated": "2026-04-29T22:58:00Z"
-  }
+  },
+  {
+  "id": "30",
+  "name": "Vector",
+  "townCenter": 21,
+  "rallyCap": "225K",
+  "deploymentCap": "47K",
+  "highestTier": "T7",
+  "totalTroops": "78K",
+  "status": "active",
+  "group": "Rally Leaders",
+  "lastUpdated": "2026-04-29T12:00:00Z"
+}
 ]

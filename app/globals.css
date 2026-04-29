@@ -1,18 +1,25 @@
 @import "tailwindcss";
 
 @theme {
+  /* Core Backgrounds */
   --color-background: #0B0F14;
   --color-secondary: #111827;
   --color-card: #1F2937;
+  
+  /* Tactical Accents */
   --color-accent-gold: #F59E0B;
   --color-accent-red: #EF4444;
   --color-accent-blue: #3B82F6;
   --color-accent-green: #22C55E;
   --color-accent-muted: #9CA3AF;
+  
+  /* Text */
   --color-foreground: #f8fafc;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
 }
