@@ -1,13 +1,35 @@
 import React from "react";
 import Card from "@/components/ui/Card";
+// 1. Add these missing imports! Adjust the path if you named the files differently.
+import LeadershipRoster from "@/components/LeadershipRoster";
+import MembersRoster from "@/components/MembersRoster";
 
-export default function RosterOverview() {
+export default async function RosterOverview() {
+  let membersList = [];
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/roster`, { 
+      cache: 'no-store' 
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      membersList = data.members || [];
+    }
+  } catch (error) {
+    console.error("Error loading roster:", error);
+  }
+
   return (
-    <div className="grid gap-6">
-      <Card>
-        <h2 className="text-lg font-semibold mb-4">Roster Overview</h2>
-        <p className="text-sm text-accent-muted">Select a category from the tabs above to view specific member groups.</p>
-      </Card>
+    <div className="space-y-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white">Alliance Roster</h1>
+        <p className="text-sm text-accent-muted">Current combat stats and deployments for Kingshot members.</p>
+      </div>
+
+      {/* 2. Now these components will render correctly */}
+      <LeadershipRoster members={membersList} />
+      <MembersRoster members={membersList} />
     </div>
   );
 }

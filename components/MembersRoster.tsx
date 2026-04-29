@@ -12,7 +12,6 @@ interface Member {
 }
 
 export default function MembersRoster({ members = [] }: { members?: Member[] }) {
-  // Filter OUT Vector and albo so they stay in the Leadership section
   const r3Members = members.filter(m => 
     m.name.toLowerCase() !== "vector" && 
     m.name.toLowerCase() !== "albo"

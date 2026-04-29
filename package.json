@@ -1,7 +1,11 @@
 {
+  "name": "kingshot-baby",
+  "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.4",
     "@vercel/kv": "^3.0.0",
+    "dotenv": "^16.4.7",
     "fuse.js": "^7.3.0",
     "next": "^16.2.4",
     "react": "^19.2.5",
@@ -25,6 +29,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:seed": "node upload-mock.js"
   }
 }
